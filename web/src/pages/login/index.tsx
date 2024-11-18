@@ -31,7 +31,6 @@ const LoginPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.title}>Light OAuth2</div>
         <Form
           form={form}
           onSubmit={onFinish}
@@ -44,9 +43,7 @@ const LoginPage = () => {
             rules={[{ required: true, message: '请输入用户名' }]}
           >
             <Input
-              prefix={<IconUser />}
               placeholder="用户名"
-              allowClear
             />
           </FormItem>
           <FormItem
@@ -54,9 +51,7 @@ const LoginPage = () => {
             rules={[{ required: true, message: '请输入密码' }]}
           >
             <Input.Password
-              prefix={<IconLock />}
               placeholder="密码"
-              allowClear
             />
           </FormItem>
           <FormItem>

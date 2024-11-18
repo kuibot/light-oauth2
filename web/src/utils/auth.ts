@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 
 // Cookie keys
-const TOKEN_KEY = 'oauth_token';
+export const TOKEN_KEY = 'oauth_token';
 const USER_KEY = 'oauth_user';
 
 // OAuth2 配置

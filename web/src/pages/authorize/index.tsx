@@ -96,7 +96,8 @@ const AuthorizePage = () => {
       }
 
       // 如果客户端信息中有回调地址，使用它
-      if (clientInfo?.redirectUri) {
+      // 先禁用让页面跳转到成功页面
+      if (!clientInfo?.redirectUri) {
         // 构建回调 URL，可以添加必要的参数
         const callbackUrl = new URL(clientInfo.redirectUri);
         callbackUrl.searchParams.append('token', result.access_token);
@@ -107,12 +108,12 @@ const AuthorizePage = () => {
         // 延迟跳转，让用户看到成功提示
         setTimeout(() => {
           window.location.href = callbackUrl.toString();
-        }, 2000);
+        }, 600);
       } else {
         // 没有回调地址，跳转到默认页面
         setTimeout(() => {
-          history.push('/');
-        }, 2000);
+          history.push('/success');
+        }, 600);
       }
     } catch (error) {
       console.error('授权失败:', error);

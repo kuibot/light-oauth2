@@ -10,3 +10,6 @@ paths:
     method: 'post'
     exec:
       - token-exchange
+  - path: '/user/info'
+    method: 'GET'
+    handler: 'com.networknt.oauth.demo.handler.UserInfoHandler'

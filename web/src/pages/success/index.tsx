@@ -8,7 +8,7 @@ const SuccessPage: React.FC = () => {
   const code = searchParams.get('code');
 
   const handleBack = () => {
-    history.push('/login');
+    history.push('/');
   };
 
   return (
@@ -18,7 +18,6 @@ const SuccessPage: React.FC = () => {
         title="授权成功"
         subTitle={
           <>
-            <p>授权码：{code}</p>
             <p>您已成功授权应用访问您的账户</p>
           </>
         }
