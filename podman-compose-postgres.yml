@@ -1,0 +1,122 @@
+version: '3'
+networks:
+  oauth2-network:
+    driver: bridge
+
+services:
+  postgresdb:
+    image: postgres:9.6.0
+    networks:
+      - oauth2-network
+    volumes:
+      - ./db/postgres:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: my-secret-pw
+      POSTGRES_DB: oauth2
+    ports:
+      - "5432:5432"
+
+  oauth2-code:
+    build:
+      context: code/
+      dockerfile: docker/Dockerfile
+    networks:
+      - oauth2-network
+    ports:
+      - "6881:6881"
+    volumes:
+      - ./db/postgres/config/oauth2-code:/config
+    depends_on:
+      - postgresdb
+    environment:
+      DATABASE_HOST: postgresdb
+
+  oauth2-token:
+    build:
+      context: token/
+      dockerfile: docker/Dockerfile
+    networks:
+      - oauth2-network
+    ports:
+      - "6882:6882"
+    volumes:
+      - ./db/postgres/config/oauth2-token:/config
+    depends_on:
+      - postgresdb
+    environment:
+      DATABASE_HOST: postgresdb
+
+  oauth2-service:
+    build:
+      context: service/
+      dockerfile: docker/Dockerfile
+    networks:
+      - oauth2-network
+    ports:
+      - "6883:6883"
+    volumes:
+      - ./db/postgres/config/oauth2-service:/config
+    depends_on:
+      - postgresdb
+    environment:
+      DATABASE_HOST: postgresdb
+
+  oauth2-client:
+    build:
+      context: client/
+      dockerfile: docker/Dockerfile
+    networks:
+      - oauth2-network
+    ports:
+      - "6884:6884"
+    volumes:
+      - ./db/postgres/config/oauth2-client:/config
+    depends_on:
+      - postgresdb
+    environment:
+      DATABASE_HOST: postgresdb
+
+  oauth2-user:
+    build:
+      context: user/
+      dockerfile: docker/Dockerfile
+    networks:
+      - oauth2-network
+    ports:
+      - "6885:6885"
+    volumes:
+      - ./db/postgres/config/oauth2-user:/config
+    depends_on:
+      - postgresdb
+    environment:
+      DATABASE_HOST: postgresdb
+
+  oauth2-refresh-token:
+    build:
+      context: refresh-token/
+      dockerfile: docker/Dockerfile
+    networks:
+      - oauth2-network
+    ports:
+      - "6886:6886"
+    volumes:
+      - ./db/postgres/config/oauth2-refresh-token:/config
+    depends_on:
+      - postgresdb
+    environment:
+      DATABASE_HOST: postgresdb
+
+  oauth2-key:
+    build:
+      context: key/
+      dockerfile: docker/Dockerfile
+    networks:
+      - oauth2-network
+    ports:
+      - "6887:6887"
+    volumes:
+      - ./db/postgres/config/oauth2-key:/config
+    depends_on:
+      - postgresdb
+    environment:
+      DATABASE_HOST: postgresdb

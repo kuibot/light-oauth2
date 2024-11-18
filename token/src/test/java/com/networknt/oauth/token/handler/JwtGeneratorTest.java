@@ -24,7 +24,7 @@ public class JwtGeneratorTest {
         List<String> scope = Arrays.asList("api.r", "api.w");
         claims.setStringListClaim("scope", scope); // multi-valued claims work too and will end up as a JSON array
 
-        String jwt = JwtIssuer.getJwt(claims);
+        String jwt = JwtIssuer.getJwt(claims, null, null);
         Assert.assertNotNull(jwt);
         System.out.println(jwt);
     }

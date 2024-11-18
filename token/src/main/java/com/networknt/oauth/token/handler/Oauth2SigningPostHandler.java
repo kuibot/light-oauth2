@@ -48,7 +48,7 @@ public class Oauth2SigningPostHandler extends TokenAuditHandler implements Light
             try {
                 // assume that the custom_claim is in format of json map string.
                 Map<String, Object>  customClaim = sr.getPayload();
-                jwt = JwtIssuer.getJwt(mockCcClaims(client.getClientId(), expires, customClaim));
+                jwt = JwtIssuer.getJwt(mockCcClaims(client.getClientId(), expires, customClaim), null, null);
             } catch (Exception e) {
                 logger.error("Exception:", e);
                 throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));

@@ -162,7 +162,7 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
             String jwt;
             try {
                 // since we have removed scope, client_id and client_secret from the formMap, the rest of properties are custom claims.
-                jwt = JwtIssuer.getJwt(mockBsClaims(clientId, scope, formMap));
+                jwt = JwtIssuer.getJwt(mockBsClaims(clientId, scope, formMap), null, null);
             } catch (Exception e) {
                 logger.error("Exception:", e);
                 throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
@@ -199,7 +199,7 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
                 if(customClaim != null && customClaim.length() > 0) {
                     customMap = Config.getInstance().getMapper().readValue(customClaim, new TypeReference<Map<String, Object>>(){});
                 }
-                jwt = JwtIssuer.getJwt(mockCcClaims(client.getClientId(), scope, customMap));
+                jwt = JwtIssuer.getJwt(mockCcClaims(client.getClientId(), scope, customMap), null, null);
             } catch (Exception e) {
                 logger.error("Exception:", e);
                 throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
@@ -308,7 +308,7 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
                     if(customClaim != null && customClaim.length() > 0) {
                         customMap = Config.getInstance().getMapper().readValue(customClaim, new TypeReference<Map<String, Object>>(){});
                     }
-                    jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, csrf, customMap));
+                    jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, csrf, customMap), null, null);
                 } catch (Exception e) {
                     throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                 }
@@ -394,7 +394,7 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
                                 if(customClaim != null && customClaim.length() > 0) {
                                     customMap = Config.getInstance().getMapper().readValue(customClaim, new TypeReference<Map<String, Object>>(){});
                                 }
-                                String jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, null, customMap));
+                                String jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, null, customMap), null, null);
                                 // generate a refresh token and associate it with userId and clientId
                                 String refreshToken = UUID.randomUUID().toString();
                                 RefreshToken token = new RefreshToken();
@@ -467,7 +467,7 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
                         if(customClaim != null && customClaim.length() > 0) {
                             customMap = Config.getInstance().getMapper().readValue(customClaim, new TypeReference<Map<String, Object>>(){});
                         }
-                        jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, csrf, customMap));
+                        jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, csrf, customMap), null, null);
                     } catch (Exception e) {
                         throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                     }
@@ -548,7 +548,7 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
                 String roles = (String)formMap.remove("roles");
                 String jwt;
                 try {
-                    jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, null, formMap));
+                    jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, null, formMap), null, null);
                 } catch (Exception e) {
                     throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                 }

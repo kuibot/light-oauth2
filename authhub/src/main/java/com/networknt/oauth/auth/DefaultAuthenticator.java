@@ -23,13 +23,19 @@ import java.util.Set;
 public class DefaultAuthenticator extends AuthenticatorBase<DefaultAuth> {
     private static final Logger logger = LoggerFactory.getLogger(DefaultAuthenticator.class);
 
-
     @Override
     public Account authenticate(String id, Credential credential) {
+        if (logger.isDebugEnabled())
+            logger.debug("Authenticating user with id: {}", id);
         IMap<String, User> users = CacheStartupHookProvider.hz.getMap("users");
+        if (logger.isDebugEnabled())
+            logger.debug("Got users map from Hazelcast: {}", users != null);
         Account account = getAccount(id);
+        if (logger.isDebugEnabled())
+            logger.debug("Retrieved account for id {}: {}", id, account != null);
+
         if (credential instanceof LightPasswordCredential) {
-            LightPasswordCredential passwordCredential = (LightPasswordCredential)credential;
+            LightPasswordCredential passwordCredential = (LightPasswordCredential) credential;
             char[] password = passwordCredential.getPassword();
             String clientAuthClass = passwordCredential.getClientAuthClass();
             String userType = passwordCredential.getUserType();
@@ -44,17 +50,24 @@ public class DefaultAuthenticator extends AuthenticatorBase<DefaultAuth> {
                 logger.error("Exception:", e);
                 return null;
             }
-            if(!match) return null;
-        } else if(credential instanceof LightGSSContextCredential) {
+            if (!match) {
+                if(logger.isDebugEnabled()) logger.debug("Password validation failed for user: {}", id);
+                return null;
+            }
+        } else if (credential instanceof LightGSSContextCredential) {
             return new Account() {
                 private Set<String> roles = LdapUtil.authorize(id);
                 private final Principal principal = () -> id;
+
                 @Override
                 public Principal getPrincipal() {
                     return principal;
                 }
+
                 @Override
-                public Set<String> getRoles() { return roles; }
+                public Set<String> getRoles() {
+                    return roles;
+                }
             };
         }
         return account;
@@ -66,12 +79,16 @@ public class DefaultAuthenticator extends AuthenticatorBase<DefaultAuth> {
             return new Account() {
                 private Set<String> roles = parseRoles(users.get(id).getRoles());
                 private final Principal principal = () -> id;
+
                 @Override
                 public Principal getPrincipal() {
                     return principal;
                 }
+
                 @Override
-                public Set<String> getRoles() { return roles; }
+                public Set<String> getRoles() {
+                    return roles;
+                }
             };
         }
         return null;
@@ -79,10 +96,10 @@ public class DefaultAuthenticator extends AuthenticatorBase<DefaultAuth> {
 
     public Set<String> parseRoles(String roles) {
         Set<String> set = Collections.EMPTY_SET;
-        if(roles != null) {
+        if (roles != null) {
             // remove the leading and trailing spaces.
             roles = roles.trim();
-            if(roles.contains(" ")) {
+            if (roles.contains(" ")) {
                 // multiple roles in a format separated by " ".
                 set = new HashSet<>(Arrays.asList(roles.split("\\s+")));
             } else {

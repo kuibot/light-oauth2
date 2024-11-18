@@ -1,0 +1,42 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right bottom, #165DFF, #722ED1);
+  }
+  
+  .loginBox {
+    width: 400px;
+    padding: 40px;
+    background: var(--color-bg-2);
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+  
+    img {
+      width: 48px;
+      height: 48px;
+      margin-right: 16px;
+    }
+  
+    .title {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--color-text-1);
+    }
+  }
+  
+  :global(.arco-input-wrapper) {
+    background-color: var(--color-fill-2);
+  }
+  
+  :global(.arco-btn-primary) {
+    margin-top: 20px;
+  }
