@@ -31,18 +31,16 @@ const AuthorizePage = () => {
         const authCode = searchParams.get('code');
         const authState = searchParams.get('state');
         const clientId = searchParams.get('client_id');
-        console.log(authCode);
+        console.log('Auth Code:', authCode);
 
         if (!authCode) {
           Message.error('未获取到授权码');
           history.push('/login');
           return;
         }
-        console.log(authCode);
 
         setCode(authCode);
         setState(authState);
-        console.log(3);
 
         // 获取客户端信息
         if (clientId) {
@@ -76,7 +74,10 @@ const AuthorizePage = () => {
   }, []);
 
   const handleAuthorize = async () => {
-    if (!code) return;
+    if (!code) {
+      Message.error('未获取到授权码');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -89,19 +90,36 @@ const AuthorizePage = () => {
         duration: 2000,
       });
 
-      // 授权成功后延迟跳转，让用户看到成功提示
-      setTimeout(() => {
-        history.push('/');
-      }, 2000);
+      // 如果有 state 参数，需要验证
+      if (state) {
+        // TODO: 验证 state 参数，防止 CSRF 攻击
+      }
+
+      // 如果客户端信息中有回调地址，使用它
+      if (clientInfo?.redirectUri) {
+        // 构建回调 URL，可以添加必要的参数
+        const callbackUrl = new URL(clientInfo.redirectUri);
+        callbackUrl.searchParams.append('token', result.access_token);
+        if (result.refresh_token) {
+          callbackUrl.searchParams.append('refresh_token', result.refresh_token);
+        }
+        
+        // 延迟跳转，让用户看到成功提示
+        setTimeout(() => {
+          window.location.href = callbackUrl.toString();
+        }, 2000);
+      } else {
+        // 没有回调地址，跳转到默认页面
+        setTimeout(() => {
+          history.push('/');
+        }, 2000);
+      }
     } catch (error) {
       console.error('授权失败:', error);
       Message.error({
         content: '授权失败，请重试',
         duration: 3000,
       });
-      setTimeout(() => {
-        history.push('/login');
-      }, 3000);
     } finally {
       setLoading(false);
     }

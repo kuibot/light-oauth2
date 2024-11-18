@@ -1,0 +1,5 @@
+tls:
+  loadTrustStore: true
+  trustStore: server.truststore
+  trustStorePass: 'changeit'
+  loadDefaultTrustStore: true #加载本地证书库，一般用于访问公网地址

@@ -8,9 +8,10 @@ const USER_KEY = 'oauth_user';
 export const oauth2Config = {
   clientId: 'f7d42348-c647-4efb-a52d-4c5787421e72',
   responseType: 'code',
-  redirectUri: 'https://localhost:8000/authorize',
-  // 使用相对路径，通过代理访问
-  serverUrl: '',  // 空字符串表示使用相对路径
+  redirectUri: 'https://localhost:8000/callback',
+  serverUrl: 'https://localhost:6882',  // OAuth2 服务器地址
+  tokenUrl: '/_auth/authorize',  // Token 交换端点
+  scope: 'petstore.r petstore.w',
 };
 
 // Token 相关操作
@@ -40,7 +41,7 @@ export const handleLogin = async (values: { username: string; password: string; 
       response_type: 'code',
       client_id: oauth2Config.clientId,
       redirect_uri: oauth2Config.redirectUri,
-      scope: 'trust',  // 可选的 scope
+      scope: oauth2Config.scope,  // 可选的 scope
       state: Math.random().toString(36).substring(7),  // 防止 CSRF
       user_type: 'admin',  // 用户类型
       username: values.username,  // 用户名
@@ -141,35 +142,56 @@ export const handleLogin = async (values: { username: string; password: string; 
 };
 
 // 处理授权回调
-export const handleCallback = async (code: string) => {
+// 处理授权回调
+export async function handleCallback(code: string) {
   try {
-    const tokenForm = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      client_id: oauth2Config.clientId,
-      redirect_uri: oauth2Config.redirectUri,
-    });
-
-    const response = await fetch('/oauth2/token', {
+    // 发送授权码到后端进行交换
+    const response = await fetch('/_auth/authorize', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json'
       },
-      body: tokenForm,
+      body: JSON.stringify({ code })
     });
 
     if (!response.ok) {
-      throw new Error('获取token失败');
+      const error = await response.json();
+      throw new Error(error.description || 'Failed to exchange token');
     }
 
     const data = await response.json();
-    setToken(data.access_token);
+    
+    // 存储令牌
+    // 使用 cookie 存储令牌
+    Cookies.set(TOKEN_KEY, data.access_token, { 
+      expires: 7, // 7天过期
+      secure: true, // 只在 HTTPS 下传输
+      sameSite: 'strict' // 防止 CSRF 攻击
+    });
+
+    if (data.refresh_token) {
+      Cookies.set('refresh_token', data.refresh_token, {
+        expires: 30, // 30天过期
+        secure: true,
+        sameSite: 'strict'
+      });
+    }
+
+    // 如果有用户信息,也存储到 cookie
+    if (data.user) {
+      Cookies.set(USER_KEY, JSON.stringify(data.user), {
+        expires: 7,
+        secure: true,
+        sameSite: 'strict'
+      });
+    }
+
     return data;
   } catch (error) {
-    console.error('Token error:', error);
+    console.error('Token exchange failed:', error);
     throw error;
   }
-};
+}
 
 // 获取客户端信息
 export const getClientInfo = async (clientId: string) => {

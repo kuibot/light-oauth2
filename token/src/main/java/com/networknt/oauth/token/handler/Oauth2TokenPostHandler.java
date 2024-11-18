@@ -15,6 +15,7 @@ import com.networknt.oauth.security.LightPasswordCredential;
 import com.networknt.oauth.token.helper.HttpAuth;
 import com.networknt.security.JwtConfig;
 import com.networknt.security.JwtIssuer;
+import com.networknt.security.KeyUtil;
 import com.networknt.service.SingletonServiceFactory;
 import com.networknt.status.Status;
 import com.networknt.exception.ApiException;
@@ -87,7 +88,10 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
     private static final String CLIENT_AUTHENTICATE_CLASS_NOT_FOUND = "ERR10043";
     private static final String AUTHORIZATION_CODE_NOT_FOUND = "ERR12052";
 
-    static JwtConfig config = (JwtConfig)Config.getInstance().getJsonObjectConfig("jwt", JwtConfig.class);
+    public static String long_kid = "Tj_l_tIBTginOtQbL0Pv5w";
+    public static String long_key = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDRhFtYBvUUYOk9RRysikkLoHCWzCUoxL7PbAwCht2jQE3E1ruEb+AgdU+Re7Xgl+jUmFSFLjARLcN1jdrqiWo9xE3VMIJRUd37VMt3UEFL7Kr210nocJ7CF7l9eidpFErC62+gfuL95Hibd9DUahXNUADcieClOvim2czcR/d+P7nBliaK3OtFTJC18BFOXeoZpc/+DykcUA/TOs1W86dX6Nw0wqbxhk1yByzVK4tIW1QNel/s2vb/E6GI0z5uIRLoPNrWwwuuXFQsW5y25072XKQHvIWHcsczG0hnIhQe7LRFuO44YLk+YOjAu21mk8j+PjKckcBoBavwN3PvrhZ1AgMBAAECggEBAMuDYGLqJydLV2PPfSHQFVH430RrOfEW4y2CC0xtCl8n+CKqXm0vaqq8qLRtUWa+yEexS/AtxDz7ke/fAfVt00f6JYxe2Ub6WcBnRlg4GaURV6P7zWu98UghWWkbvaphLpmVrdFdT0pFoi2JvcyG23SaMKwINbDpzlvsFgUm1q3GoCIZXRc8iAKT+Iil1QmGdacGni/D2WzPTLSf1/acZU2TsPBWLS/jsjPe4ac4IDpxssDC+w6QArZ8U64DKJ531C4tK9o+RArQzBrEaZc1mAlw7xAPr36tXvOTUycux6k07ERSIIze2okVmmewL6tX1cb7tY1F8T+ebKGD3xGEAYUCgYEA9Lpy4593uTBww7AupcZq2YL8qHUfnvxIWiFbeIznUezyYyRbjyLDYj+g7QfQJHk579UckDZZDcT3H+wdh1LxQ7HKDlYQn2zt8Kdufs5cvSObeGkSqSY26g4QDRcRcRO3xFs8bQ/CnPNT7hsWSY+8wnuRvjUTstMA1vx1+/HHZfMCgYEA2yq8yFogdd2/wUcFlqjPgbJ98X9ZNbZ06uUCur4egseVlSVE+R2pigVVwFCDQpseGu2GVgW5q8kgDGsaJuEVWIhGZvS9IHONBz/WB0PmOZjXlXOhmT6iT6m/9bAQk8MtOee77lUVvgf7FO8XDKtuPh6VGJpr+YJHxHoEX/dbo/cCgYAjwy9Q1hffxxVjc1aNwR4SJRMY5uy1BfbovOEqD6UqEq8lD8YVd6YHsHaqzK589f4ibwkaheajnXnjf1SdVuCM3OlDCQ6qzXdD6KO8AhoJRa/Ne8VPVJdHwsBTuWBCHviGyDJfWaM93k0QiYLLQyb5YKdenVEAm9cOk5wGMkHKQwKBgH050CASDxYJm/UNZY4N6nLKz9da0lg0Zl2IeKTG2JwU+cz8PIqyfhqUrchyuG0oQG1WZjlkkBAtnRg7YffxB8dMJh3RnPabz2ri+KGyFCu4vwVvylfLR+aIsVvqO66SCJdbZy/ogcHQwY/WhK8CjL0FsF8cbLFl1SfYKAPFTCFFAoGANmOKonyafvWqsSkcl6vUTYYq53IN+qt0IJTDB2cEIEqLXtNth48HvdQkxDF3y4cNLZevhyuIy0Z3yWGbZM2yWbDNn8Q2W5RTyajofQu1mIv2EBzLeOoaSBPLX4G6r4cODSwWbjOdaNxcXd0+uYeAWDuQUSnHpHFJ2r1cpL/9Nbs=";
+
+    static JwtConfig config = (JwtConfig)JwtConfig.load();
     private final static OauthTokenConfig oauthTokenConfig = (OauthTokenConfig) Config.getInstance().getJsonObjectConfig(OauthTokenConfig.CONFIG_NAME, OauthTokenConfig.class);
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -305,11 +309,15 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
                 try {
                     // assume that the custom_claim is in format of json map string.
                     String customClaim = client.getCustomClaim();
+                    System.out.println(customClaim);
                     if(customClaim != null && customClaim.length() > 0) {
                         customMap = Config.getInstance().getMapper().readValue(customClaim, new TypeReference<Map<String, Object>>(){});
+                        System.out.println(customMap);
                     }
-                    jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, csrf, customMap), null, null);
+                    jwt = JwtIssuer.getJwt(mockAcClaims(client.getClientId(), scope, userId, userType, roles, csrf, customMap), long_kid, KeyUtil.deserializePrivateKey(long_key, KeyUtil.RSA));
+                    System.out.println(jwt);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
                 }
                 // generate a refresh token and associate it with userId and clientId

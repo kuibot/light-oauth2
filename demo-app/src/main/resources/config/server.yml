@@ -1,0 +1,19 @@
+---
+ip: 0.0.0.0
+# Server port
+httpPort: 8888
+enableHttp: false
+# Https port
+httpsPort: 8888
+# Enable HTTPS
+enableHttps: true
+# Enable HTTP2
+enableHttp2: true
+# Keystore configuration
+keystoreName: server.keystore
+keystorePass: changeit
+keyPass: changeit
+# Enable two way TLS
+enableTwoWayTls: false
+# Enable registry
+enableRegistry: false

@@ -114,6 +114,7 @@
         <module>authorize</module>
         <module>authhub</module>
         <module>provider</module>
+        <module>demo-app</module>
     </modules>
 
     <dependencyManagement>

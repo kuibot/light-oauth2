@@ -5,9 +5,18 @@
 description: Cors Http Handler
 enabled: true
 allowedOrigins:
-- http://localhost:8080
+  - http://localhost:8000
+  - https://localhost:8000
 allowedMethods:
-- GET
-- POST
-- PUT
-- DELETE
+  - GET
+  - POST
+  - PUT
+  - DELETE
+  - OPTIONS
+allowedHeaders:
+  - Content-Type
+  - Authorization
+  - X-Requested-With
+  - X-Request-ID
+  - X-XSRF-TOKEN
+allowCredentials: true # 允许携带凭证

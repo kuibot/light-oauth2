@@ -1,0 +1,12 @@
+# Handler configuration
+---
+enabled: true
+
+handlers:
+  - com.networknt.oauth.demo.handler.TokenExchangeHandler@token-exchange
+
+paths:
+  - path: '/authorize'
+    method: 'post'
+    exec:
+      - token-exchange

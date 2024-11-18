@@ -22,10 +22,10 @@ enableHttp2: true
 keystoreName: server.keystore
 
 # Keystore password
-keystorePass: password
+keystorePass: changeit
 
 # Private key password
-keyPass: password
+keyPass: changeit
 
 # Flag that indicate if two way TLS is enabled. Not recommended in docker container.
 enableTwoWayTls: false

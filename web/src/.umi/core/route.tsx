@@ -19,11 +19,12 @@ if (process.env.NODE_ENV === 'development') {
 import React from 'react';
 
 export async function getRoutes() {
-  const routes = {"authorize/index":{"path":"authorize","id":"authorize/index"},"success/index":{"path":"success","id":"success/index"},"login/index":{"path":"login","id":"login/index"}} as const;
+  const routes = {"authorize/index":{"path":"authorize","id":"authorize/index"},"callback/index":{"path":"callback","id":"callback/index"},"success/index":{"path":"success","id":"success/index"},"login/index":{"path":"login","id":"login/index"}} as const;
   return {
     routes,
     routeComponents: {
 'authorize/index': React.lazy(() => import(/* webpackChunkName: "src__pages__authorize__index" */'../../../src/pages/authorize/index.tsx')),
+'callback/index': React.lazy(() => import(/* webpackChunkName: "src__pages__callback__index" */'../../../src/pages/callback/index.tsx')),
 'success/index': React.lazy(() => import(/* webpackChunkName: "src__pages__success__index" */'../../../src/pages/success/index.tsx')),
 'login/index': React.lazy(() => import(/* webpackChunkName: "src__pages__login__index" */'../../../src/pages/login/index.tsx')),
 },
