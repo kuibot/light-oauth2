@@ -203,7 +203,7 @@ public class Oauth2TokenPostHandler extends TokenAuditHandler implements LightHt
                 if(customClaim != null && customClaim.length() > 0) {
                     customMap = Config.getInstance().getMapper().readValue(customClaim, new TypeReference<Map<String, Object>>(){});
                 }
-                jwt = JwtIssuer.getJwt(mockCcClaims(client.getClientId(), scope, customMap), null, null);
+                jwt = JwtIssuer.getJwt(mockCcClaims(client.getClientId(), scope, customMap), long_kid, KeyUtil.deserializePrivateKey(long_key, KeyUtil.RSA));
             } catch (Exception e) {
                 logger.error("Exception:", e);
                 throw new ApiException(new Status(GENERIC_EXCEPTION, e.getMessage()));
